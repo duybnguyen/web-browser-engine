@@ -1,10 +1,23 @@
 import socket
+import ssl
 
 class URL:
+   # example url: http://example.org:8080/index.html
    def __init__(self, url):
+      self.scheme, url = url.split("://", 1)
+      assert self.scheme in ["http", "https"]
+      if self.scheme == "http":
+         self.port = 80
+      elif self.scheme == "https":
+         self.port = 443
+
       if "/" not in url:
-         url = url + "/"
+         url += "/"
       self.host, url = url.split("/", 1) 
+      if ":" in self.host:
+         self.host, port = self.host.split(":", 1)
+         self.port = int(port)
+      
       self.path = "/" + url
 
 
@@ -16,8 +29,12 @@ class URL:
          proto = socket.IPPROTO_TCP
       )
 
-      # connect to the host using the socket on port 80
-      s.connect((self.host, 80))
+      # connect to the host using the socket on self.port
+      s.connect((self.host, self.port))
+      # setup encryped connection if scheme is https
+      if self.scheme == "https":
+         ctx = ssl.create_default_context()
+         s = ctx.wrap_socket(s, server_hostname = self.host)
 
       # form a request
       request = "GET {} HTTP/1.0\r\n".format(self.path)
@@ -26,7 +43,7 @@ class URL:
       s.send(request.encode("utf8"))
 
       # reading the server's response
-      response = s.makefile("r", encoding="utf", newline="\r\n")
+      response = s.makefile("r", encoding="utf-8", newline="\r\n")
       # reading the status line
       statusline = response.readline()
       version, status, explanation = statusline.split(" ", 2)
