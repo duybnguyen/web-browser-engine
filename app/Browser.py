@@ -1,5 +1,5 @@
 import tkinter
-from utils.defs import CANVAS_WIDTH, CANVAS_HEIGHT
+from utils.defs import CANVAS_WIDTH, CANVAS_HEIGHT, CANVAS_HSTEP, CANVAS_VSTEP
 
 class Browser: 
    def __init__(self):
@@ -14,12 +14,11 @@ class Browser:
 
    # write body to canvas
    def load(self, body):
-      HSTEP, VSTEP = 12, 18
-      cursor_x, cursor_y = HSTEP, VSTEP
+      cursor_x, cursor_y = CANVAS_HSTEP, CANVAS_VSTEP # pointer to where the next character will go
       for c in body:
          self.canvas.create_text(cursor_x, cursor_y, text = c)
-         cursor_x += HSTEP
-         # keeps the text 
-         if cursor_x >= CANVAS_WIDTH - HSTEP:
-            cursor_y += VSTEP
-            cursor_x = HSTEP
+         cursor_x += CANVAS_HSTEP
+         # keeps the text insde the canvas
+         if cursor_x >= CANVAS_WIDTH - CANVAS_HSTEP:
+            cursor_y += CANVAS_VSTEP
+            cursor_x = CANVAS_HSTEP
