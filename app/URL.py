@@ -40,7 +40,7 @@ class URL:
       request = "GET {} HTTP/1.0\r\n".format(self.path)
       request += "Host: {}\r\n".format(self.host)
       request += "\r\n" #signals end of request
-      s.send(request.encode("utf8"))
+      s.send(request.encode("utf-8"))
 
       # reading the server's response
       response = s.makefile("r", encoding="utf-8", newline="\r\n")
