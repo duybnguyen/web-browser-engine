@@ -1,5 +1,7 @@
 import tkinter
-from utils.defs import CANVAS_WIDTH, CANVAS_HEIGHT, CANVAS_HSTEP, CANVAS_VSTEP
+from utils.defs import CANVAS_WIDTH, CANVAS_HEIGHT, SCROLL_STEP, layout
+from app.URL import URL
+from utils.helpers import lex
 
 class Browser: 
    def __init__(self):
@@ -11,14 +13,23 @@ class Browser:
          height = CANVAS_HEIGHT
       )
       self.canvas.pack()
+      self.scroll = 0
+      
+      self.window.bind("<Down>", self.scrolldown)
+
+   def draw(self):
+      self.canvas.delete("all")
+      for x, y, c in self.display_list:
+         self.canvas_create_text(x, y - self.scroll , text = c)
 
    # write body to canvas
-   def load(self, body):
-      cursor_x, cursor_y = CANVAS_HSTEP, CANVAS_VSTEP # pointer to where the next character will go
-      for c in body:
-         self.canvas.create_text(cursor_x, cursor_y, text = c)
-         cursor_x += CANVAS_HSTEP
-         # keeps the text insde the canvas
-         if cursor_x >= CANVAS_WIDTH - CANVAS_HSTEP:
-            cursor_y += CANVAS_VSTEP
-            cursor_x = CANVAS_HSTEP
+   def load(self, url):
+      parsedURL = URL(url).request()
+      body = lex(parsedURL)
+      self.display_list = layout(body)
+      self.draw()
+
+   def scrollDown(self, e):
+      self.scroll += SCROLL_STEP
+      self.draw()
+   
