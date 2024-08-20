@@ -21,6 +21,11 @@ def layout(text):
    display_list = []
    cursor_x, cursor_y = CANVAS_HSTEP, CANVAS_VSTEP
    for c in text: 
+      if c == "\r\n" or c == "\n":
+         cursor_y += CANVAS_VSTEP   # Move down to the next line
+         cursor_x = CANVAS_HSTEP    # Reset cursor_x to the beginning of the line
+         continue  # Skip adding the newline character to the display_list
+         
       display_list.append((cursor_x, cursor_y, c))
       cursor_x += CANVAS_HSTEP
       # keeps the text insde the canvas and add new lines when appropriate
