@@ -33,11 +33,21 @@ class Browser:
 
    # write body to canvas
    def load(self, url):
-      parsedURL = URL(url)
-      parsedURL = parsedURL.request()
-      body = lex(parsedURL)
-      self.display_list = layout(body)
-      self.draw()
+      if url.lower() == "about:blank":
+         self.display_list = []  # Render an empty page
+         self.draw()
+         return
+
+      try:
+         parsedURL = URL(url)
+         parsedURL = parsedURL.request()
+         body = lex(parsedURL)
+         self.display_list = layout(body)
+         self.draw()
+      except Exception as e:
+         # If any error occurs, load about:blank
+         print(f"Error loading URL: {e}")
+         self.load("about:blank")
 
    def on_resize(self, e):
       # Only recalculate layout if the width changes
