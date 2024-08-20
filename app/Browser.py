@@ -15,7 +15,6 @@ class Browser:
       self.canvas.pack(fill = tkinter.BOTH, expand = True)
       self.display_list = []
       self.scroll = 0
-      self.content_body = ""
       self.last_width = CANVAS_WIDTH
       
       self.window.bind("<Configure>", self.on_resize)
@@ -36,16 +35,14 @@ class Browser:
    def load(self, url):
       parsedURL = URL(url)
       parsedURL = parsedURL.request()
-      self.content_body = lex(parsedURL)
-      self.display_list = layout(self.content_body)
+      body = lex(parsedURL)
+      self.display_list = layout(body)
       self.draw()
 
    def on_resize(self, e):
       # Only recalculate layout if the width changes
       if e.width != self.last_width:
          self.last_width = e.width
-         self.display_list = layout(self.content_body)
-         self.draw()
 
    def scroll_down(self, e):
       self.scroll += SCROLL_STEP
