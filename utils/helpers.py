@@ -1,3 +1,5 @@
+import tkinter.font
+import re
 from utils.defs import ENTITIES
 from utils.defs import CANVAS_WIDTH, CANVAS_HSTEP, CANVAS_VSTEP
 
@@ -20,16 +22,19 @@ def lex(body):
 def layout(text):
    display_list = []
    cursor_x, cursor_y = CANVAS_HSTEP, CANVAS_VSTEP
-   for c in text: 
-      if c == "\r\n" or c == "\n":
+   font = tkinter.font.Font()
+   for word in text.split(): 
+      w = font.measure(word)
+      if word == "\r\n" or word == "\n":
          cursor_y += CANVAS_VSTEP   # Move down to the next line
          cursor_x = CANVAS_HSTEP    # Reset cursor_x to the beginning of the line
          continue  # Skip adding the newline character to the display_list
          
-      display_list.append((cursor_x, cursor_y, c))
-      cursor_x += CANVAS_HSTEP
       # keeps the text insde the canvas and add new lines when appropriate
-      if cursor_x >= CANVAS_WIDTH - CANVAS_HSTEP:
-         cursor_y += CANVAS_VSTEP
+      if cursor_x + w >= CANVAS_WIDTH - CANVAS_HSTEP:
+         cursor_y += font.metrics("linespace") * 1.25
          cursor_x = CANVAS_HSTEP
+
+      display_list.append((cursor_x, cursor_y, word))
+      cursor_x += w + font.measure(" ")
    return display_list

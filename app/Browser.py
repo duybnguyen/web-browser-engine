@@ -29,6 +29,7 @@ class Browser:
          if y > self.scroll + CANVAS_HEIGHT: continue
          if y + CANVAS_VSTEP < self.scroll: continue
 
+         #  simulate scrolling by moving the content up and down based on scroll value
          self.canvas.create_text(x, y - self.scroll, text = c)
 
    # write body to canvas
