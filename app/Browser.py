@@ -1,7 +1,9 @@
 import tkinter
+
 from utils.defs import CANVAS_WIDTH, CANVAS_HEIGHT, SCROLL_STEP, CANVAS_VSTEP
 from app.URL import URL
-from utils.helpers import lex, layout
+from utils.helpers import lex
+from app.Layout import Layout
 
 class Browser: 
    def __init__(self):
@@ -24,13 +26,13 @@ class Browser:
 
    def draw(self):
       self.canvas.delete("all")
-      for x, y, c in self.display_list:
+      for x, y, c, f in self.display_list:
          # skip drawing characters that are offscreen
          if y > self.scroll + CANVAS_HEIGHT: continue
          if y + CANVAS_VSTEP < self.scroll: continue
 
          #  simulate scrolling by moving the content up and down based on scroll value
-         self.canvas.create_text(x, y - self.scroll, text = c)
+         self.canvas.create_text(x, y - self.scroll, text = c, font = f, anchor='nw')
 
    # write body to canvas
    def load(self, url):
@@ -42,8 +44,8 @@ class Browser:
       try:
          parsedURL = URL(url)
          parsedURL = parsedURL.request()
-         body = lex(parsedURL)
-         self.display_list = layout(body)
+         tokens = lex(parsedURL)
+         self.display_list = Layout(tokens).display_list
          self.draw()
       except Exception as e:
          # If any error occurs, load about:blank
