@@ -26,13 +26,13 @@ class Browser:
 
    def draw(self):
       self.canvas.delete("all")
-      for x, y, c, f in self.display_list:
+      for x, y, word, font in self.display_list:
          # skip drawing characters that are offscreen
          if y > self.scroll + CANVAS_HEIGHT: continue
          if y + CANVAS_VSTEP < self.scroll: continue
 
          #  simulate scrolling by moving the content up and down based on scroll value
-         self.canvas.create_text(x, y - self.scroll, text = c, font = f, anchor='nw')
+         self.canvas.create_text(x, y - self.scroll, text=word, font=font, anchor='nw')
 
    # write body to canvas
    def load(self, url):
