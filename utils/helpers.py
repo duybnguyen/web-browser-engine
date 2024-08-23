@@ -1,7 +1,5 @@
 import tkinter.font
-from utils.defs import FONTS
-from app.Text import Text
-from app.Tag import Tag
+from utils.defs import FONTS, Text, Tag
 
 # returns the body of the response instantiating it with the appropriate class
 def lex(body):

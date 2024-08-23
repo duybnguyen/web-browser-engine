@@ -1,8 +1,5 @@
-
-
-from utils.defs import CANVAS_HSTEP, CANVAS_VSTEP, CANVAS_WIDTH
+from utils.defs import CANVAS_HSTEP, CANVAS_VSTEP, CANVAS_WIDTH, Text
 from utils.helpers import get_font
-from app.Text import Text
 
 class Layout:
    def __init__(self, tokens):
