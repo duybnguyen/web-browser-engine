@@ -21,6 +21,7 @@ class Layout:
       if isinstance(tok, Text):
          for word in tok.text.split():
                self.word(word)
+      # examine tag tokens to change font when directed by the page
       elif tok.tag == "i":
          self.style = "italic"
       elif tok.tag == "/i":
@@ -30,13 +31,13 @@ class Layout:
       elif tok.tag == "/b":
          self.weight = "normal"
       elif tok.tag == "small":
-         self.size -= 2
+         self.font_size -= 2
       elif tok.tag == "/small":
-         self.size += 2
+         self.font_size += 2
       elif tok.tag == "big":
-         self.size += 4
+         self.font_size += 4
       elif tok.tag == "/big":
-         self.size -= 4
+         self.font_size -= 4
       elif tok.tag == "br":
          self.flush()
       elif tok.tag == "/p":
@@ -45,18 +46,19 @@ class Layout:
 
    def flush(self):
       if not self.line: return
-
-      metrics = [font.metrics() for x, word, font in self.line]
+      # align the words using the ascent of the tallest character on that line
+      metrics = [font.metrics() for _, _, font in self.line]
 
       max_ascent = max([metric["ascent"] for metric in metrics])
       baseline = self.cursor_y + 1.25 * max_ascent
 
+      # add the new y position for that word along with the other arguments to display list
       for x, word, font in self.line:
          y = baseline - font.metrics("ascent")
          self.display_list.append((x, y, word, font))
 
+      # update x and y pointers to point at the next line
       max_descent = max([metric["descent"] for metric in metrics])
-
       self.cursor_y = baseline + 1.25 * max_descent
       self.cursor_x = CANVAS_HSTEP
       self.line = []
@@ -70,7 +72,7 @@ class Layout:
       word_width = font.measure(word)
       space_width = font.measure(" ")
          
-      # wraps word if word width exceeds canvas width and hstep
+      # flush line once the words in self.line fill up the line
       if self.cursor_x + word_width >= CANVAS_WIDTH - CANVAS_HSTEP:
          self.flush()
       self.line.append((self.cursor_x, word, font))

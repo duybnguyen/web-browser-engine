@@ -1,26 +1,8 @@
 import tkinter.font
-from utils.defs import FONTS, Text, Tag
+from utils.defs import FONTS, Text, Element
 
-# returns the body of the response instantiating it with the appropriate class
-def lex(body):
-    out = []
-    buffer = ""
-    in_tag = False
-    for c in body:
-        if c == "<":
-            in_tag = True
-            if buffer: out.append(Text(buffer))
-            buffer = ""
-        elif c == ">":
-            in_tag = False
-            out.append(Tag(buffer))
-            buffer = ""
-        else:
-            buffer += c
-    if not in_tag and buffer:
-        out.append(Text(buffer))
-    return out
 
+# cache fonts in memory to load them faster in the future
 def get_font(size, weight, style):
     key = (size, weight, style)
     if key not in FONTS:
@@ -28,3 +10,9 @@ def get_font(size, weight, style):
         label = tkinter.Label(font=font)
         FONTS[key] = (font, label)
     return FONTS[key][0]
+
+# prints the structure of the tree for debugging
+def print_tree(node, indent=0):
+   print(" " * indent, node)
+   for child in node.children:
+      print_tree(child, indent + 2)

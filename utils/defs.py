@@ -9,7 +9,12 @@ FONTS = {}
 @dataclass
 class Text:
     text: str
+    children: list
+    parent: str
+
 
 @dataclass
-class Tag:
+class Element:
     tag: str
+    children: list
+    parent: str
