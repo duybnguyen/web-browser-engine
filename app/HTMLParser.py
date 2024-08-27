@@ -7,10 +7,12 @@ class HTMLParser:
       self.body = body
       self.unfinished = []
 
+
    def get_attributes(self, text):
       parts = text.split()
       tag = parts[0].casefold()
       attributes = {}
+      # slice the tag name from the rest of the attributes
       for attrpair in parts[1:]:
          if "=" in attrpair:
             key, value = attrpair.split("=", 1)
@@ -21,6 +23,7 @@ class HTMLParser:
             attributes[attrpair.casefold()] = ""
       return tag, attributes   
    
+
    def implicit_tags(self, tag):
       while True:
          open_tags = [node.tag for node in self.unfinished]
@@ -39,36 +42,43 @@ class HTMLParser:
                break
 
 
+   # add a text node to the tree
    def add_text(self, text):
-      if text.isspace(): return # ignore new lines
+      if text.isspace(): return # ignore text that consists only of whitespace (e.g., new lines)
       self.implicit_tags(None)
 
       parent = self.unfinished[-1] # access the latest tag 
       node = Text(text, parent)
-      parent.children.append(node) # append the node as the child of the latest tag
+      parent.children.append(node) # append the new Text node as a child of the most recent tag
 
 
+   # add tag nodes to the tree
    def add_tag(self, tag):
       tag, attributes = self.get_attributes(tag)
       if tag.startswith("!"): return # ignore doctype declaration and comments
       self.implicit_tags(tag)
 
+      # close tag finishes the last unfinished node by adding it to its parent
       if tag.startswith("/"):
-         if len(self.unfinished) == 1: return
+         if len(self.unfinished) == 1: return # Do not close the root element prematurely
          node = self.unfinished.pop() 
          parent = self.unfinished[-1]
          parent.children.append(node)
 
+      # # Self-closing tag: create a node and directly append it to the current parent
       elif tag in SELF_CLOSING_TAGS:
         parent = self.unfinished[-1]
         node = Element(tag, attributes, parent)
         parent.children.append(node)
 
+      # open tag adds an unfinished node to the end of the list
       else:
          parent = self.unfinished[-1] if self.unfinished else None
          node = Element(tag, attributes, parent)
          self.unfinished.append(node) 
 
+
+   # turns incomplete tree into a complete tree by finishing any unfinished nodes
    def finish(self):
       if not self.unfinished:
             self.implicit_tags(None)
@@ -78,6 +88,8 @@ class HTMLParser:
          parent.children.append(node)
       return self.unfinished.pop()
 
+
+   # goes through body and adds nodes to HTML tree
    def parse(self):
       text = ""
       in_tag = False
