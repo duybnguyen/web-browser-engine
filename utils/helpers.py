@@ -1,5 +1,5 @@
 import tkinter.font
-from utils.defs import FONTS, Text, Element
+from utils.defs import FONTS
 
 
 # cache fonts in memory to load them faster in the future

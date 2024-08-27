@@ -2,8 +2,9 @@ import tkinter
 
 from utils.defs import CANVAS_WIDTH, CANVAS_HEIGHT, SCROLL_STEP, CANVAS_VSTEP
 from app.URL import URL
-from utils.helpers import lex
+from app.HTMLParser import HTMLParser
 from app.Layout import Layout
+from utils.helpers import print_tree
 
 class Browser: 
    def __init__(self):
@@ -24,6 +25,8 @@ class Browser:
       self.window.bind("<KeyPress-Down>", self.scroll_down)
       self.window.bind("<KeyPress-Up>", self.scroll_up)
 
+      self.nodes = None
+
    def draw(self):
       self.canvas.delete("all")
       for x, y, word, font in self.display_list:
@@ -42,14 +45,14 @@ class Browser:
          return
 
       try:
-         parsedURL = URL(url)
-         parsedURL = parsedURL.request()
-         tokens = lex(parsedURL)
-         self.display_list = Layout(tokens).display_list
+         body = URL(url).request()
+         self.nodes = HTMLParser(body).parse()
+         self.display_list = Layout(self.nodes).display_list
          self.draw()
       except Exception as e:
          # If any error occurs, load about:blank
          print(f"Error loading URL: {e}")
+         self.display_list = []  # Ensure the display list is cleared
          self.load("about:blank")
 
    def on_resize(self, e):
@@ -62,6 +65,6 @@ class Browser:
       self.draw()
 
    def scroll_up(self, e):
-      self.scroll -= SCROLL_STEP
+      self.scroll = max(0, self.scroll - SCROLL_STEP)
       self.draw()
    
