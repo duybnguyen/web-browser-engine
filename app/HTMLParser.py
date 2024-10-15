@@ -7,7 +7,7 @@ class HTMLParser:
       self.body = body
       self.unfinished = []
 
-
+   # separates the attributes from the tag name for easier tag processing
    def get_attributes(self, text):
       parts = text.split()
       tag = parts[0].casefold()
@@ -24,6 +24,7 @@ class HTMLParser:
       return tag, attributes   
    
 
+   # adds any missing required tags
    def implicit_tags(self, tag):
       while True:
          open_tags = [node.tag for node in self.unfinished]
@@ -78,7 +79,7 @@ class HTMLParser:
          self.unfinished.append(node) 
 
 
-   # turns incomplete tree into a complete tree by finishing any unfinished nodes
+   # turns incomplete tree into a complete tree by finishing any unfinished nodes and returning the document node
    def finish(self):
       if not self.unfinished:
             self.implicit_tags(None)

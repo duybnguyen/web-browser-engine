@@ -27,6 +27,7 @@ class Browser:
 
       self.nodes = None
 
+   # from a populated display_list, draws the words based on their x and y positions and font
    def draw(self):
       self.canvas.delete("all")
       for x, y, word, font in self.display_list:
@@ -37,7 +38,7 @@ class Browser:
          #  simulate scrolling by moving the content up and down based on scroll value
          self.canvas.create_text(x, y - self.scroll, text=word, font=font, anchor='nw')
 
-   # write body to canvas
+   # populates display list with the positions of each word and then calls draw on those words
    def load(self, url):
       if url.lower() == "about:blank":
          self.display_list = []  # Render an empty page
@@ -46,8 +47,8 @@ class Browser:
 
       try:
          body = URL(url).request()
-         self.nodes = HTMLParser(body).parse()
-         self.display_list = Layout(self.nodes).display_list
+         self.document_node = HTMLParser(body).parse()
+         self.display_list = Layout(self.document_node).display_list
          self.draw()
       except Exception as e:
          # If any error occurs, load about:blank
@@ -60,6 +61,7 @@ class Browser:
       if e.width != self.last_width:
          self.last_width = e.width
 
+   # redraws characters once user scrolls
    def scroll_down(self, e):
       self.scroll += SCROLL_STEP
       self.draw()

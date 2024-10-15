@@ -11,9 +11,11 @@ class URL:
       elif self.scheme == "https":
          self.port = 443
 
-      if "/" not in url:
+      if "/" not in url: # adds / only if url doesn't contain a path and the host is missing a /
          url += "/"
       self.host, url = url.split("/", 1) 
+
+      # check if url specifies a port
       if ":" in self.host:
          self.host, port = self.host.split(":", 1)
          self.port = int(port)
@@ -50,10 +52,10 @@ class URL:
       # reading the headers
       response_headers = {}
       while True:
-         line = response.readline()
+         line = response.readline() # after every call readline's internal pointer points to the next line
          if line == "\r\n": break # if the line is just an empty line that means it's the end of the response
          header, value = line.split(":", 1)
-         response_headers[header.casefold()] = value.strip()
+         response_headers[header.casefold()] = value.strip() # save headers
       
       # can't process these headers yet
       assert "transfer-encoding" not in response_headers

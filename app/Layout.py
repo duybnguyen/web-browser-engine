@@ -26,7 +26,7 @@ class Layout:
       elif tag == "big":
          self.font_size += 4
       elif tag == "br":
-         self.flush()
+         self.flush() # new line
 
    def close_tag(self, tag):
       if tag == "i":
@@ -38,9 +38,10 @@ class Layout:
       elif tag == "big":
          self.font_size -= 4
       elif tag == "p":
-         self.flush()
+         self.flush() # new line
          self.cursor_y += CANVAS_VSTEP
 
+   # fills up display_list with words and its positions on the canvas in order along wiht their specific styling
    def recurse(self, tree):
       if isinstance(tree, Text):
          for word in tree.text.split():
@@ -74,14 +75,14 @@ class Layout:
 
 
 
-   
+   # applies the current font size, weight and style to the passed on word and saves that words x postion in a line array and calculates the x position for the next word
    def word(self, word):
       font = get_font(self.font_size, self.weight, self.style)
       # horizontal space in pixels
       word_width = font.measure(word)
       space_width = font.measure(" ")
          
-      # flush line once the words in self.line fill up the line
+      # flush line once the line fill up the line
       if self.cursor_x + word_width >= CANVAS_WIDTH - CANVAS_HSTEP:
          self.flush()
       self.line.append((self.cursor_x, word, font))

@@ -2,7 +2,7 @@ import tkinter.font
 from utils.defs import FONTS
 
 
-# cache fonts in memory to load them faster in the future
+# cache fonts in memory using a FONTS dictionary to avoid recreating the same font multiple times
 def get_font(size, weight, style):
     key = (size, weight, style)
     if key not in FONTS:
