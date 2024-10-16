@@ -1,7 +1,9 @@
-from utils.defs import CANVAS_HSTEP, CANVAS_VSTEP, CANVAS_WIDTH, BLOCK_ELEMENTS
+from utils.defs import CANVAS_VSTEP, BLOCK_ELEMENTS
 from app.Element import Element
 from utils.helpers import get_font
 from app.Text import Text
+from app.DrawText import DrawText
+from app.DrawRect import DrawRect
 
 class BlockLayout:
    def __init__(self, document_node, parent, previous):
@@ -150,4 +152,13 @@ class BlockLayout:
 
 
    def paint(self):
-      return self.display_list
+      cmds = []
+      if isinstance(self.node, Element) and self.node.tag == "pre":
+         x2, y2 = self.x + self.width, self.y + self.height
+         rect = DrawRect(self.x, self.y, x2, y2, "gray")
+         cmds.append(rect)
+      if self.layout_mode() == "inline":
+         for x, y, word, font in self.display_list:
+               cmds.append(DrawText(x, y, word, font))
+
+      return cmds

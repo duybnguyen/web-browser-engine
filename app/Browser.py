@@ -31,13 +31,11 @@ class Browser:
    # from a populated display_list, draws the words based on their x and y positions and font
    def draw(self):
       self.canvas.delete("all")
-      for x, y, word, font in self.display_list:
-         # skip drawing characters that are offscreen
-         if y > self.scroll + CANVAS_HEIGHT: continue
-         if y + CANVAS_VSTEP < self.scroll: continue
 
-         #  simulate scrolling by moving the content up and down based on scroll value
-         self.canvas.create_text(x, y - self.scroll, text=word, font=font, anchor='nw')
+      for cmd in self.display_list:
+         if cmd.top > self.scroll + CANVAS_HEIGHT: continue
+         if cmd.bottom < self.scroll: continue
+         cmd.execute(self.scroll, self.canvas)
 
    # populates display list with the positions of each word and then calls draw on those words
    def load(self, url):
@@ -67,7 +65,8 @@ class Browser:
 
    # redraws characters once user scrolls
    def scroll_down(self, e):
-      self.scroll += SCROLL_STEP
+      max_y = max(self.document.height + 2*CANVAS_VSTEP - CANVAS_HEIGHT, 0)
+      self.scroll = min(self.scroll + SCROLL_STEP, max_y)
       self.draw()
 
    def scroll_up(self, e):
