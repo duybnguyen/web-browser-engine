@@ -3,8 +3,9 @@ import tkinter
 from utils.defs import CANVAS_WIDTH, CANVAS_HEIGHT, SCROLL_STEP, CANVAS_VSTEP
 from app.URL import URL
 from app.HTMLParser import HTMLParser
-from app.Layout import Layout
-from utils.helpers import print_tree
+from utils.helpers import paint_tree
+from app.DocumentLayout import DocumentLayout
+
 
 class Browser: 
    def __init__(self):
@@ -48,7 +49,10 @@ class Browser:
       try:
          body = URL(url).request()
          self.document_node = HTMLParser(body).parse()
-         self.display_list = Layout(self.document_node).display_list
+         self.document = DocumentLayout(self.document_node)
+         self.document.layout()
+         self.display_list = []
+         paint_tree(self.document, self.display_list)
          self.draw()
       except Exception as e:
          # If any error occurs, load about:blank
